@@ -68,6 +68,7 @@ pipeline {
                 script {
                     withDockerRegistry(credentialsId: 'docker') {
                         sh ''' 
+                        docker login -u nagarjuna1993 -p nagarjuna@1993
                         echo "Building Docker image..."
                         docker build --no-cache -t nagarjuna1993/bms:latest -f bookmyshow-app/Dockerfile bookmyshow-app
 
