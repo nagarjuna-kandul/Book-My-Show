@@ -1,6 +1,6 @@
 (with K8S Stage)
 
-pipeline {
+ppipeline {
     agent any
 
     tools {
@@ -24,7 +24,7 @@ pipeline {
 
         stage('Checkout from Git') {
             steps {
-                git branch: 'main', url: 'https://github.com/KastroVKiran/Book-My-Show.git'
+                git branch: 'main', url: 'https://github.com/nagarjuna-kandul/Book-My-Show.git'
                 sh 'ls -la'  // Verify files after checkout
             }
         }
@@ -44,7 +44,7 @@ pipeline {
         stage('Quality Gate') {
             steps {
                 script {
-                    waitForQualityGate abortPipeline: false, credentialsId: 'Sonar-token'
+                    waitForQualityGate abortPipeline: true
                 }
             }
         }
@@ -67,7 +67,7 @@ pipeline {
 
         stage('OWASP FS Scan') {
             steps {
-                dependencyCheck additionalArguments: '--scan ./ --disableYarnAudit --disableNodeAudit', odcInstallation: 'DP-Check'
+                dependencyCheck additionalArguments: '--scan ./bookmyshow-app --disableYarnAudit --disableNodeAudit', odcInstallation: 'DP-Check'
                 dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
             }
         }
@@ -81,13 +81,13 @@ pipeline {
         stage('Docker Build & Push') {
             steps {
                 script {
-                    withDockerRegistry(credentialsId: 'docker', toolName: 'docker') {
+                    withDockerRegistry(credentialsId: 'docker') {
                         sh ''' 
                         echo "Building Docker image..."
-                        docker build --no-cache -t $DOCKER_IMAGE -f bookmyshow-app/Dockerfile bookmyshow-app
+                        docker build --no-cache -t nagarjuna1993/bms -f bookmyshow-app/Dockerfile bookmyshow-app
 
                         echo "Pushing Docker image to Docker Hub..."
-                        docker push $DOCKER_IMAGE
+                        docker push nagarjuna1993/bms
                         '''
                     }
                 }
@@ -123,11 +123,11 @@ pipeline {
     post {
         always {
             emailext attachLog: true,
-                subject: "'${currentBuild.result}'",
+                subject: "${currentBuild.result}",
                 body: "Project: ${env.JOB_NAME}<br/>" +
                       "Build Number: ${env.BUILD_NUMBER}<br/>" +
                       "URL: ${env.BUILD_URL}<br/>",
-                to: 'kastrokiran@gmail.com',
+                to: 'nagarjunareddy55511@gmail.com',
                 attachmentsPattern: 'trivyfs.txt'
         }
     }
