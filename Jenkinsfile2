@@ -1,6 +1,6 @@
 (with K8S Stage)
 
-ppipeline {
+pipeline {
     agent any
 
     tools {
